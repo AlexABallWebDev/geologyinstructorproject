@@ -1,0 +1,6 @@
+"First Name","Last Name",Email,"Phone Number",State,City,Zip,"Address Line 1","Address Line 2",Institution,Department,"Department Website","Individual Website","Instructor Primary Title",Campus
+Alex,Ball,aball6@mail.greenriver.edu,"253 569 9448",Washington,Auburn,98092,"31810 126th Ave SE",,"Green River College","Information Technology",greenrivertech.net,alexb.greenrivertech.net,Student,"Auburn Campus"
+Test,Case,testing@mail.com,2555555555,Washington,Auburn,55555,"fifth street 55555",,"testing institution","department of test",,,"test title",
+"this is a different",editor,testemail@emailtest.com,1234567,Arkansas,test,33333,"testing address",,yup,nope,,,commander,
+John,Smith,john@testmail.com,"253 569 9448",Washington,Auburn,98092,"real address place","PO box test","Green River College","Information Technology",greenrivertech.net,alexb.greenrivertech.net,"Example Data Creator","Auburn Campus"
+Another,Test,testingcsvfile@test.net,5020154534,Colorado,"Real City",19463,"Place Place Place","Update Info Test","Real institution","Department of Testing",,,"Very Important Test",
