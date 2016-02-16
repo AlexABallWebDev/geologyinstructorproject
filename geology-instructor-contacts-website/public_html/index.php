@@ -139,19 +139,33 @@ if (isset($editor_id))
 								<th>Edit</th>
 								<th>First Name</th>
 								<th>Last name</th>
-								<th>Email</th>
-								<th>Phone number</th>
+								<?php
+								//email and phone numbers can recieve spam,
+								//hide them unless the user is logged in.
+								if (isset($loggedIn))
+								{
+									print '<th>Email</th>';
+									print '<th>Phone number</th>';
+								}
+								?>
 								<th>State</th>
 								<th>City</th>
 								<th>ZIP</th>
-								<th>Address line 1</th>
-								<th>Address line 2</th>
+								<?php
+								//address is spammable, hide it unless the user is logged in.
+								if (isset($loggedIn))
+								{
+									print '<th>Address line 1</th>';
+									print '<th>Address line 2</th>';
+								}
+								?>
 								<th>Institution</th>
 								<th>Department</th>
 								<th>Department Website</th>
 								<th>Individual Website</th>
 								<th>Primary Title/Position</th>
 								<th>Campus</th>
+								<th>State Editor Privileges</th>
 							</tr>
 						</thead>
 	
@@ -160,19 +174,33 @@ if (isset($editor_id))
 								<th>Edit</th>
 								<th>First Name</th>
 								<th>Last name</th>
-								<th>Email</th>
-								<th>Phone number</th>
+								<?php
+								//email and phone numbers can recieve spam,
+								//hide them unless the user is logged in.
+								if (isset($loggedIn))
+								{
+									print '<th>Email</th>';
+									print '<th>Phone number</th>';
+								}
+								?>
 								<th>State</th>
 								<th>City</th>
 								<th>ZIP</th>
-								<th>Address line 1</th>
-								<th>Address line 2</th>
+								<?php
+								//address is spammable, hide it unless the user is logged in.
+								if (isset($loggedIn))
+								{
+									print '<th>Address line 1</th>';
+									print '<th>Address line 2</th>';
+								}
+								?>
 								<th>Institution</th>
 								<th>Department</th>
 								<th>Department Website</th>
 								<th>Individual Website</th>
 								<th>Primary Title/Position</th>
 								<th>Campus</th>
+								<th>State Editor Privileges</th>
 							</tr>
 						</tfoot>
 	
@@ -192,6 +220,38 @@ if (isset($editor_id))
 							{
 								foreach ($results as $row)
 								{
+									//check the editor table for an editor that has the same email as this instructor.
+									//if such an editor exists, show that editor's state privilege (super or a state)
+									$getEditorPrivilegeSQL = 'SELECT editor_state, super_user FROM
+												geology_instructor_editors WHERE email = \'' . $row['email'] . '\'';
+									
+									$editorPrivilegesResults = mysqli_query($geologyDBConnection, $getEditorPrivilegeSQL);
+									
+									//if there is no result, this instructor's privileges column will say "none".
+									$showPrivileges = 'None';
+									
+									//since email is a unique field in the editor database, there will only be 1 or 0 results.
+									//if there is a result, check what type of privileges the editor has.
+									if ($editorPrivilegesResults && mysqli_num_rows($editorPrivilegesResults) == 1)
+									{
+										//get the one row
+										$privRow = mysqli_fetch_assoc($editorPrivilegesResults);
+										
+										//if editor is super editor, then the instructor's editor
+										//privilege will be shown as "super".
+										if ($privRow['super_user'] == 1)
+										{
+											$showPrivileges = 'Super';
+										}
+										//if editor is state editor, then the instructor's editor
+										//privilege will be shown as the state that this editor has
+										//privileges for.
+										else if ($privRow['editor_state'] != 'Not a State Editor')
+										{
+											$showPrivileges = $privRow['editor_state'];
+										}
+									}
+									
 									//build edit button that will link to the update page with this instructor's data
 									$editButton = '<a class="btn btn-default" href="update-contact.php?contact_id=';
 									$editButton = $editButton . $row['contact_id'] . '">Edit Data</a>';
@@ -200,19 +260,29 @@ if (isset($editor_id))
 									print '<td>' . $editButton . '</td>';
 									print '<td>' . $row['first_name'] . '</td>';
 									print '<td>' . $row['last_name'] . '</td>';
-									print '<td>' . $row['email'] . '</td>';
-									print '<td>' . $row['phone_number'] . '</td>';
+									//email and phone numbers can recieve spam,
+									//hide them unless the user is logged in.
+									if (isset($loggedIn))
+									{
+										print '<td>' . $row['email'] . '</td>';
+										print '<td>' . $row['phone_number'] . '</td>';
+									}
 									print '<td>' . $row['state'] . '</td>';
 									print '<td>' . $row['city'] . '</td>';
 									print '<td>' . $row['zip'] . '</td>';
-									print '<td>' . $row['address_line_1'] . '</td>';
-									print empty($row['address_line_2']) ? '<td></td>' : '<td>' . $row['address_line_2'] . '</td>'; //optional field
+									//address is spammable, hide it unless the user is logged in.
+									if (isset($loggedIn))
+									{
+										print '<td>' . $row['address_line_1'] . '</td>';
+										print empty($row['address_line_2']) ? '<td></td>' : '<td>' . $row['address_line_2'] . '</td>'; //optional field
+									}
 									print '<td>' . $row['institution'] . '</td>';
 									print '<td>' . $row['department'] . '</td>';
 									print empty($row['department_website']) ? '<td></td>' : '<td>' . $row['department_website'] . '</td>'; //optional field
 									print empty($row['personal_website']) ? '<td></td>' : '<td>' . $row['personal_website'] . '</td>'; //optional field
 									print '<td>' . $row['instructor_primary_title'] . '</td>';
 									print empty($row['campus']) ? '<td></td>' : '<td>' . $row['campus'] . '</td>'; //optional field
+									print "<td>$showPrivileges</td>";
 									print '</tr>';
 								}
 							}

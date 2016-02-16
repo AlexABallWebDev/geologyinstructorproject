@@ -26,15 +26,46 @@ if ($result = @mysqli_query($geologyDBConnection, $sql))
 	$columnHeaderArray[] = 'Individual Website';
 	$columnHeaderArray[] = 'Instructor Primary Title';
 	$columnHeaderArray[] = 'Campus';
+	$columnHeaderArray[] = 'State Editor Privileges';
 	
 	//write the column header row to the file
 	fputcsv($targetExportFile, $columnHeaderArray);
 	
-	
 	//for each entry, add it to the csv file
 	foreach($result as $row)
 	{
+		//check the editor table for an editor that has the same email as this instructor.
+		//if such an editor exists, show that editor's state privilege (super or a state)
+		$getEditorPrivilegeSQL = 'SELECT editor_state, super_user FROM
+					geology_instructor_editors WHERE email = \'' . $row['email'] . '\'';
 		
+		$editorPrivilegesResults = mysqli_query($geologyDBConnection, $getEditorPrivilegeSQL);
+		
+		//if there is no result, this instructor's privileges column will say "none".
+		$showPrivileges = 'None';
+		
+		//since email is a unique field in the editor database, there will only be 1 or 0 results.
+		//if there is a result, check what type of privileges the editor has.
+		if ($editorPrivilegesResults && mysqli_num_rows($editorPrivilegesResults) == 1)
+		{
+			//get the one row
+			$privRow = mysqli_fetch_assoc($editorPrivilegesResults);
+			
+			//if editor is super editor, then the instructor's editor
+			//privilege will be shown as "super".
+			if ($privRow['super_user'] == 1)
+			{
+				$showPrivileges = 'Super';
+			}
+			//if editor is state editor, then the instructor's editor
+			//privilege will be shown as the state that this editor has
+			//privileges for.
+			else if ($privRow['editor_state'] != 'Not a State Editor')
+			{
+				$showPrivileges = $privRow['editor_state'];
+			}
+		}
+									
 		//put elements into an array
 		$exportArray = array();
 		$exportArray[] = $row['first_name'];
@@ -52,6 +83,7 @@ if ($result = @mysqli_query($geologyDBConnection, $sql))
 		$exportArray[] = $row['personal_website'];
 		$exportArray[] = $row['instructor_primary_title'];
 		$exportArray[] = $row['campus'];
+		$exportArray[] = $showPrivileges;
 		
 		//write this row to the file
 		fputcsv($targetExportFile, $exportArray);

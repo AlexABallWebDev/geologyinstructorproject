@@ -146,7 +146,7 @@ if (isset($_POST['submit']))
 			<div class="row">
 				<div class="col-xs-12">
 					<form method="post" action="#">
-							<!-- Area for errors, if any -->
+						<!-- Area for errors, if any -->
 						<div class="row">
 							<div class="col-xs-12">
 								<?php
@@ -185,6 +185,14 @@ if (isset($_POST['submit']))
 									?></label>
 									<input type="password" class="form-control" id="loginPassword" name="loginPassword"
 												placeholder="Password" value="" required="required">
+								</div>
+							</div>
+							
+							<!-- Row 3 -->
+							<div class="row">
+								<!-- Password -->
+								<div class="col-xs-12 col-sm-4 col-sm-offset-4">
+									<a href="forgot-password.php">Forgot Password</a>
 								</div>
 							</div>
 							

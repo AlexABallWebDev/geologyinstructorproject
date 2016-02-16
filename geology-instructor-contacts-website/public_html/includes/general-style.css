@@ -23,6 +23,12 @@ body {
 	margin-bottom: 20px;
 }
 
+.description {
+	background-color: #FFF2CB;
+	padding: 15px;
+	font-size: 16px;
+}
+
 /*begin navbar styles*/
 
 ul#navbar {

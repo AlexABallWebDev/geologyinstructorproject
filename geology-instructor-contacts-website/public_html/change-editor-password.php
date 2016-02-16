@@ -44,8 +44,8 @@ if (!isset($editor_id))
 
 //set variables for form fields to empty strings
 $updatePassword = '';
-$updatePasswordConfirm = '';
 $updatePasswordNew = '';
+$updatePasswordConfirm = '';
 
 //if form was submitted, validate submitted data
 if (isset($_POST['submit']))
@@ -53,19 +53,22 @@ if (isset($_POST['submit']))
 	//check to make sure all required fields are filled out and put data into variables
 	//note that check_if_empty also cleans the data, if found.
 	$updatePassword = check_if_empty('updatePassword', 'You must enter your current password.');
-	$updatePasswordConfirm = check_if_empty('updatePasswordConfirm', 'You must enter your current password.');
 	$updatePasswordNew = check_if_empty('updatePasswordNew', 'You must enter a new password.');
+	$updatePasswordConfirm = check_if_empty('updatePasswordConfirm', 'You must enter your new password.');
 	
-	//only continue if the current and confirm password fields match and are not empty.
-	if ($updatePassword != $updatePasswordConfirm)
+	//only continue if the new password and confirm password fields match and are not empty.
+	if ($updatePasswordNew != $updatePasswordConfirm)
 	{
-		$errorArray['passwordMismatch'] = '<p class="form-error">Current password and confirm password fields do not match.</p>';
+		$errorArray['passwordMismatch'] = '<p class="form-error">New password and confirm password fields do not match.</p>';
 	}
 	
 	if (empty($errorArray))
 	{
 		//get database connection named $geologyDBConnection
 		require('../secure-includes/db-connection.php');
+		
+		//escape current password for mySQL
+		$updatePassword = mysqli_real_escape_string($geologyDBConnection, $updatePassword);
 		
 		//check to make sure the email is already being used in the database (each editor has a unique email address)
 		$checkPasswordSQL = "SELECT * FROM geology_instructor_editors WHERE";
@@ -84,7 +87,6 @@ if (isset($_POST['submit']))
 		{
 			//escape data for mySQL database
 			$updatePasswordNew = mysqli_real_escape_string($geologyDBConnection, $updatePasswordNew);
-			$updatePassword = mysqli_real_escape_string($geologyDBConnection, $updatePassword);
 			
 			//define sql statement
 			$updatePasswordSQL = "UPDATE geology_instructor_editors SET password = SHA1('$updatePasswordNew')";
@@ -208,22 +210,7 @@ if (isset($_POST['submit']))
 								</div>
 							</div>
 							
-							
 							<!-- Row 2 -->
-							<div class="row">
-								<!-- State -->
-								<div class="col-xs-12 col-sm-4">
-									<label for="updatePasswordConfirm">Confirm Password: <span class="form-error">*</span>
-									<?php
-									//if there is an error for this element, print it. otherwise, print an empty string.
-									print (empty($errorArray['updatePasswordConfirm'])) ? '' : '<br />' . $errorArray['updatePasswordConfirm'];
-									?></label>
-									<input type="password" class="form-control" id="updatePasswordConfirm" name="updatePasswordConfirm"
-												placeholder="Enter your current password again" value="<?php print $updatePasswordConfirm; ?>" >
-								</div>
-							</div>
-							
-							<!-- Row 3 -->
 							<div class="row">
 								<!-- New Password -->
 								<div class="col-xs-12 col-sm-4">
@@ -234,6 +221,20 @@ if (isset($_POST['submit']))
 									?></label>
 									<input type="password" class="form-control" id="updatePasswordNew" name="updatePasswordNew"
 												placeholder="New Password" value="<?php print $updatePasswordNew; ?>" >
+								</div>
+							</div>
+							
+							<!-- Row 3 -->
+							<div class="row">
+								<!-- State -->
+								<div class="col-xs-12 col-sm-4">
+									<label for="updatePasswordConfirm">Confirm New Password: <span class="form-error">*</span>
+									<?php
+									//if there is an error for this element, print it. otherwise, print an empty string.
+									print (empty($errorArray['updatePasswordConfirm'])) ? '' : '<br />' . $errorArray['updatePasswordConfirm'];
+									?></label>
+									<input type="password" class="form-control" id="updatePasswordConfirm" name="updatePasswordConfirm"
+												placeholder="Enter your New password again" value="<?php print $updatePasswordConfirm; ?>" >
 								</div>
 							</div>
 							
